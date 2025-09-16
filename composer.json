@@ -5,13 +5,13 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "yosefib\\LibyanBadWords\\": "src/"
+            "Yosef\\LibyanBadwords\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "yosefib\\LibyanBadWords\\LibyanBadWordsServiceProvider"
+                "Yosef\\LibyanBadwords\\LibyanBadWordsServiceProvider"
             ]
         }
     }

@@ -91,4 +91,8 @@ Add or remove words as needed.
 
 ## 📄 License
 
+<<<<<<< HEAD
 MIT License — open-source.
+=======
+MIT License — open-source.
+>>>>>>> ec4859f (Add full package files)
