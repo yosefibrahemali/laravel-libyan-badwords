@@ -4,18 +4,18 @@
 ![Laravel](https://img.shields.io/badge/Laravel-8%2B-red)
 ![PHP](https://img.shields.io/badge/PHP-8.0%2B-blue)
 
-A **Laravel package** to filter and clean **Libyan offensive words and slang** from text.  
+A **Laravel package** to filter and clean **Libyan offensive words and slang** from text.
 Supports **normalization**, diacritics removal, repeated letters, and multiple spelling variations.
 
 ---
 
 ## ✨ Features
 
-- Detect Libyan bad words in **any text input**.
-- Clean offensive words with `*` or custom replacement.
-- Handles **variations in writing**, diacritics, repeated letters.
-- Easy integration in **Laravel projects**.
-- Publishable config for custom blocked words list.
+* Detect Libyan bad words in **any text input**.
+* Clean offensive words with `*` or custom replacement.
+* Handles **variations in writing**, diacritics, repeated letters.
+* Easy integration in **Laravel projects**.
+* Publishable config for custom blocked words list.
 
 ---
 
@@ -25,17 +25,23 @@ Install via Composer:
 
 ```bash
 composer require yosef/libyan-badwords
+```
+
 Publish the configuration file:
 
-bash
-نسخ الكود
+```bash
 php artisan vendor:publish --provider="Yosef\LibyanBadwords\LibyanBadWordsServiceProvider" --tag=config
-This will create config/libyan_badwords.php for custom words.
+```
 
-🛠 Usage
-Basic Usage
-php
-نسخ الكود
+This will create `config/libyan_badwords.php` for custom words.
+
+---
+
+## 🛠 Usage
+
+### Basic Usage
+
+```php
 use Yosef\LibyanBadwords\Filters\LibyanBadWordsFilter;
 
 // الحصول على singleton من Service Container
@@ -51,24 +57,30 @@ if ($filter->contains($text)) {
 // تنظيف النص
 $cleanText = $filter->clean($text);
 echo $cleanText; // الناتج: "هاذا واحد **** يكتب"
-Clean Multiple Words
-php
-نسخ الكود
+```
+
+### Clean Multiple Words
+
+```php
 $text = "هاذا واحد زآمـلل ومبَعّر";
 echo $filter->clean($text);
 // الناتج: "هاذا واحد **** ****"
-Customize Replacement
-php
-نسخ الكود
+```
+
+### Customize Replacement
+
+```php
 $text = "هذا مثال على اكله";
 $cleanText = str_replace('*', '[censored]', $filter->clean($text));
 echo $cleanText;
 // الناتج: "هذا مثال على [censored]"
-Middleware Example (Optional)
+```
+
+### Middleware Example (Optional)
+
 يمكن استخدام الباكج في Middleware لتنظيف أي نصوص تلقائيًا قبل الحفظ أو العرض:
 
-php
-نسخ الكود
+```php
 public function handle($request, Closure $next)
 {
     $filter = app(\Yosef\LibyanBadwords\Filters\LibyanBadWordsFilter::class);
@@ -79,11 +91,15 @@ public function handle($request, Closure $next)
 
     return $next($request);
 }
-⚙ Configuration
-config/libyan_badwords.php يحتوي على قائمة الكلمات السيئة الافتراضية:
+```
 
-php
-نسخ الكود
+---
+
+## ⚙ Configuration
+
+`config/libyan_badwords.php` يحتوي على قائمة الكلمات السيئة الافتراضية:
+
+```php
 return [
     'زامل','مبعر','مفشك','قواد','صرم','اكلا','اكله','اكلة',
     'قحبة', 'شرمولة', 'شرموطة', 'زبي', 'طيز', 'كس', 'بز',
@@ -94,7 +110,12 @@ return [
     'مدلول', 'مقرقب', 'تيس', 'مغفل', 'بوش',
     'منيك', 'طرطور', 'غبي', 'مفضوح', 'موسخ'
 ];
+```
+
 يمكنك إضافة أو إزالة الكلمات حسب الحاجة.
 
-📄 License
-This package is open-sourced software licensed under the MIT license.
+---
+
+## 📄 License
+
+This package is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
