@@ -15,7 +15,7 @@ A lightweight **Laravel package** to filter and clean **Libyan offensive words**
 Install via Composer:
 
 ```bash
-composer require yosef/libyan-badwords
+composer require yosefib/laravel-libyan-badwords:^1.0
 ```
 
 Publish the configuration file (optional, but highly recommended):
