@@ -8,68 +8,70 @@ class LibyanBadWordsFilter
 
     public function __construct()
     {
-        $this->badWords = config('libyan_badwords', []);
+        // Ensure the words list is an array and filter out any empty strings
+        $words = (array) config('libyan_badwords.words', []);
+      
+        $this->badWords = array_filter($words);
     }
 
     /**
-     * Normalize text: remove tashkeel, unify letters, remove repeated chars
+     * Normalize text for consistent matching
      */
-    protected function normalize(string $text): string
+    protected function normalize($text): string
     {
-        // إزالة التشكيل
-        $text = preg_replace('/[\p{Mn}]/u', '', $text);
+        $text = (string) $text;
 
-        // توحيد بعض الحروف
+        // Remove diacritics
+        $text = preg_replace('/[\x{0610}-\x{061A}\x{064B}-\x{065F}\x{0670}\x{06D6}-\x{06ED}]/u', '', $text);
+
+        // Unify Arabic letters
         $map = [
-            'أ' => 'ا',
-            'إ' => 'ا',
-            'آ' => 'ا',
+            'أ' => 'ا', 'إ' => 'ا', 'آ' => 'ا',
             'ه' => 'ة',
-            'ة' => 'ة',
-            'ؤ' => 'و',
-            'ى' => 'ي',
-            'ئ' => 'ي',
+            'ؤ' => 'و', 'ى' => 'ي', 'ئ' => 'ي',
         ];
         $text = strtr($text, $map);
 
-        // إزالة التكرار الزائد
-        $text = preg_replace('/(.)\1+/u', '$1', $text);
-
-        // إزالة الفراغات المكررة
+        // Remove redundant spaces
         $text = preg_replace('/\s+/', ' ', $text);
 
-        return $text;
+        return trim($text);
     }
 
     /**
-     * Check if text contains bad word
+     * Replace bad words with a replacement string
      */
-    public function contains(string $text): bool
+    public function clean($text, string $replacement = '****'): string
     {
-        $text = $this->normalize($text);
+        $modifiedText = (string) $text;
 
-        foreach ($this->badWords as $word) {
-            $wordNorm = $this->normalize($word);
-            if (mb_stripos($text, $wordNorm) !== false) {
-                return true;
-            }
+        // A character set for spaces and diacritics
+        $filler = '[\s\x{0610}-\x{061A}\x{064B}-\x{065F}\x{0670}\x{06D6}-\x{06ED}ـ]*';
+
+        foreach ($this->badWords as $badWord) {
+            $wordNorm = $this->normalize($badWord);
+            
+            // Split the normalized word into an array of its characters
+            $chars = preg_split('//u', $wordNorm, -1, PREG_SPLIT_NO_EMPTY);
+            
+            // Map characters to their possible forms in the original text
+            $regexSegments = array_map(function($char) {
+                switch ($char) {
+                    case 'ا': return '[اأإآ]';
+                    case 'و': return '[وؤ]';
+                    case 'ي': return '[يئ]';
+                    case 'ه': return '[هة]';
+                    default: return preg_quote($char);
+                }
+            }, $chars);
+
+            // Build the regex pattern by joining segments with the filler
+            $pattern = '/' . implode($filler, $regexSegments) . '/iu';
+            
+            // Perform the replacement on the original text
+            $modifiedText = preg_replace($pattern, $replacement, $modifiedText);
         }
-        return false;
-    }
 
-    /**
-     * Replace bad words with stars
-     */
-    public function clean(string $text): string
-    {
-        $textNorm = $this->normalize($text);
-
-        foreach ($this->badWords as $word) {
-            $wordNorm = $this->normalize($word);
-            $pattern = '/' . preg_quote($wordNorm, '/') . '/iu';
-            $textNorm = preg_replace($pattern, str_repeat('*', mb_strlen($wordNorm)), $textNorm);
-        }
-
-        return $textNorm;
+        return $modifiedText;
     }
 }
