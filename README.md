@@ -1,7 +1,3 @@
-I have edited and improved your `README.md` file to be more beautiful, professional, and accurate. I've corrected the code examples to be idiomatic for Laravel, updated the configuration to the correct format, and resolved the merge conflict in the license section.
-
-Here is the full, revised content for your `README.md` file.
-
 -----
 
 # 🌐 Laravel Libyan Bad Words Filter
